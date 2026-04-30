@@ -33,13 +33,13 @@ describe('inert context dedup behavior', () => {
 			hydration: { directive: 'load' },
 		});
 
-		const inertOutput = chunkToString(result as any, instruction);
+		const inertOutput = chunkToString(result as any, instruction).toString();
 		assert.match(inertOutput, /<script>/);
 		assert.equal(result._metadata.hasHydrationScript, false);
 		assert.equal(result._metadata.hasDirectives.has('load'), false);
 
 		result._metadata.templateDepth = 0;
-		const executableOutput = chunkToString(result as any, instruction);
+		const executableOutput = chunkToString(result as any, instruction).toString();
 		assert.match(executableOutput, /<script>/);
 		assert.equal(result._metadata.hasHydrationScript, true);
 		assert.equal(result._metadata.hasDirectives.has('load'), true);
@@ -69,12 +69,12 @@ describe('inert context dedup behavior', () => {
 		});
 
 		result._metadata.templateDepth = 1;
-		const inertOutput = chunkToString(result as any, rendererInstruction);
+		const inertOutput = chunkToString(result as any, rendererInstruction).toString();
 		assert.match(inertOutput, /__react/);
 		assert.equal(result._metadata.rendererSpecificHydrationScripts.has('react'), false);
 
 		result._metadata.templateDepth = 0;
-		const executableOutput = chunkToString(result as any, rendererInstruction);
+		const executableOutput = chunkToString(result as any, rendererInstruction).toString();
 		assert.match(executableOutput, /__react/);
 		assert.equal(result._metadata.rendererSpecificHydrationScripts.has('react'), true);
 	});
@@ -84,12 +84,12 @@ describe('inert context dedup behavior', () => {
 		const instruction = createRenderInstruction({ type: 'server-island-runtime' });
 
 		result._metadata.templateDepth = 1;
-		const inertOutput = chunkToString(result as any, instruction);
+		const inertOutput = chunkToString(result as any, instruction).toString();
 		assert.match(inertOutput, /replaceServerIsland/);
 		assert.equal(result._metadata.hasRenderedServerIslandRuntime, false);
 
 		result._metadata.templateDepth = 0;
-		const executableOutput = chunkToString(result as any, instruction);
+		const executableOutput = chunkToString(result as any, instruction).toString();
 		assert.match(executableOutput, /replaceServerIsland/);
 		assert.equal(result._metadata.hasRenderedServerIslandRuntime, true);
 	});
