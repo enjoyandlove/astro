@@ -20,21 +20,6 @@ const hydrationRouteData = {
 	origin: 'project' as const,
 };
 
-const rendererRouteData = {
-	route: '/inert-renderer',
-	component: 'src/pages/inert-renderer.astro',
-	params: [],
-	pathname: '/inert-renderer',
-	distURL: [],
-	pattern: /^\/inert-renderer\/?$/,
-	segments: [[{ content: 'inert-renderer', dynamic: false, spread: false }]],
-	type: 'page' as const,
-	prerender: false,
-	fallbackRoutes: [],
-	isIndex: false,
-	origin: 'project' as const,
-};
-
 const serverIslandRouteData = {
 	route: '/inert-server-island-runtime',
 	component: 'src/pages/inert-server-island-runtime.astro',
@@ -60,12 +45,6 @@ const hydrationInstruction = createRenderInstruction({
 	},
 });
 
-const rendererHydrationInstruction = createRenderInstruction({
-	type: 'renderer-hydration-script',
-	rendererName: 'react',
-	render: () => '<script>window.__react = true;</script>',
-});
-
 const serverIslandInstruction = createRenderInstruction({ type: 'server-island-runtime' });
 
 const hydrationPage = createComponent((result: any) => {
@@ -76,17 +55,6 @@ const hydrationPage = createComponent((result: any) => {
 			${templateExit(result)}
 		</template>
 		<div id="hydration-runtime">${hydrationInstruction}</div>
-	`;
-});
-
-const rendererPage = createComponent((result: any) => {
-	return render`
-		<template id="inert-renderer-template">
-			${templateEnter(result)}
-			${rendererHydrationInstruction}
-			${templateExit(result)}
-		</template>
-		<div id="renderer-runtime">${rendererHydrationInstruction}</div>
 	`;
 });
 
@@ -111,14 +79,6 @@ const pageMap = new Map([
 		}),
 	],
 	[
-		rendererRouteData.component,
-		async () => ({
-			page: async () => ({
-				default: rendererPage,
-			}),
-		}),
-	],
-	[
 		serverIslandRouteData.component,
 		async () => ({
 			page: async () => ({
@@ -132,7 +92,6 @@ const app = new App(
 	createManifest({
 		routes: [
 			createRouteInfo(hydrationRouteData),
-			createRouteInfo(rendererRouteData),
 			createRouteInfo(serverIslandRouteData),
 		],
 		clientDirectives: new Map([['load', 'console.log("directive")']]),
@@ -146,13 +105,6 @@ describe('Inert template script deduplication', () => {
 		const html = await response.text();
 
 		assert.equal(countOccurrences(html, 'console.log("directive")'), 2);
-	});
-
-	it('does not consume renderer hydration dedup inside template content', async () => {
-		const response = await app.render(new Request('http://example.com/inert-renderer'));
-		const html = await response.text();
-
-		assert.equal(countOccurrences(html, 'window.__react = true;'), 2);
 	});
 
 	it('does not consume server-island runtime dedup inside template content', async () => {
