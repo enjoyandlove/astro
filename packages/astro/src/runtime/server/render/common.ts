@@ -61,29 +61,15 @@ function stringifyChunk(
 		switch (instruction.type) {
 			case 'directive': {
 				const { hydration } = instruction;
-				// Script tags inside <template> are inert and won't execute, so
-				// encountering hydration instructions here must not consume global
-				// dedup state needed by executable contexts later in the document.
-				if (result._metadata.templateDepth > 0) {
-					const needsHydrationScript = !result._metadata.hasHydrationScript;
-					const needsDirectiveScript = !result._metadata.hasDirectives.has(hydration.directive);
-					if (needsHydrationScript) {
-						return getPrescripts(result, 'both', hydration.directive);
-					}
-					if (needsDirectiveScript) {
-						return getPrescripts(result, 'directive', hydration.directive);
-					}
-					return '';
-				}
-				let needsHydrationScript = hydration && determineIfNeedsHydrationScript(result);
-				let needsDirectiveScript =
+				const needsHydrationScript = hydration && determineIfNeedsHydrationScript(result);
+				const needsDirectiveScript =
 					hydration && determinesIfNeedsDirectiveScript(result, hydration.directive);
 
 				if (needsHydrationScript) {
-					let prescripts = getPrescripts(result, 'both', hydration.directive);
+					const prescripts = getPrescripts(result, 'both', hydration.directive);
 					return markHTMLString(prescripts);
 				} else if (needsDirectiveScript) {
-					let prescripts = getPrescripts(result, 'directive', hydration.directive);
+					const prescripts = getPrescripts(result, 'directive', hydration.directive);
 					return markHTMLString(prescripts);
 				} else {
 					return '';
