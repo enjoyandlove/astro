@@ -30,7 +30,12 @@ describe('inert context dedup behavior', () => {
 
 		const instruction = createRenderInstruction({
 			type: 'directive',
-			hydration: { directive: 'load' },
+			hydration: {
+				directive: 'load',
+				value: '',
+				componentUrl: '',
+				componentExport: { value: '' },
+			},
 		});
 
 		const inertOutput = chunkToString(result as any, instruction).toString();
@@ -49,7 +54,12 @@ describe('inert context dedup behavior', () => {
 		const result = createStubResult();
 		const instruction = createRenderInstruction({
 			type: 'directive',
-			hydration: { directive: 'load' },
+			hydration: {
+				directive: 'load',
+				value: '',
+				componentUrl: '',
+				componentExport: { value: '' },
+			},
 		});
 
 		result._metadata.hasHydrationScript = true;
